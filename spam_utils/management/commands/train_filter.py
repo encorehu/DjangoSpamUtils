@@ -35,3 +35,4 @@ class Command(BaseCommand):
         Get out? http://tableslegs.com/1m/
         """
         bfilter.train(self.spam2, True)
+        db.close()
