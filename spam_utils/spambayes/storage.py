@@ -345,7 +345,7 @@ class SQLClassifier(classifier.Classifier):
         '''Return row matching word'''
         try:
             c = self.cursor()
-            c.execute("select * from spam_utils"
+            c.execute("select * from bayes"
                       "  where word=%s",
                       (word,))
         except Exception, e:
@@ -374,14 +374,14 @@ class SQLClassifier(classifier.Classifier):
 
     def _delete_row(self, word):
         c = self.cursor()
-        c.execute("delete from spam_utils"
+        c.execute("delete from bayes"
                   "  where word=%s",
                   (word,))
         self.commit(c)
 
     def _has_key(self, key):
         c = self.cursor()
-        c.execute("select word from spam_utils"
+        c.execute("select word from bayes"
                   "  where word=%s",
                   (key,))
         return len(self.fetchall(c)) > 0
@@ -410,7 +410,7 @@ class SQLClassifier(classifier.Classifier):
 
     def _wordinfokeys(self):
         c = self.cursor()
-        c.execute("select word from spam_utils")
+        c.execute("select word from bayes")
         rows = self.fetchall(c)
         return [r[0] for r in rows]
 
@@ -447,7 +447,7 @@ class PGClassifier(SQLClassifier):
 
         c = self.cursor()
         try:
-            c.execute("select count(*) from spam_utils")
+            c.execute("select count(*) from bayes")
         except psycopg.ProgrammingError:
             self.db.rollback()
             self.create_bayes()
@@ -503,23 +503,23 @@ class PG2Classifier(SQLClassifier):
         dsn = 'dbname=%s' % self.db_name
         #pass more relevate db connection items.
         if self.db_user:
-            dns += ' user=%s' % self.db_user
+            dsn += ' user=%s' % self.db_user
 
         if self.db_password:
-            dns += ' password=%s' % self.db_password
+            dsn += ' password=%s' % self.db_password
 
         if self.db_host:
-            dns += ' host=%s' % self.db_host
+            dsn += ' host=%s' % self.db_host
 
         if self.db_port:
-            dns += ' port=%s' % self.db_port
+            dsn += ' port=%s' % self.db_port
 
         self.db = psycopg2.connect(dsn)
 
         c = self.cursor()
 
         try:
-            c.execute("select count(*) from spam_utils")
+            c.execute("select count(*) from bayes")
         except psycopg2.ProgrammingError:
             self.db.rollback()
             self.create_bayes()
@@ -598,7 +598,7 @@ class mySQLClassifier(SQLClassifier):
 
         c = self.cursor()
         try:
-            c.execute("select count(*) from spam_utils")
+            c.execute("select count(*) from bayes")
         except MySQLdb.ProgrammingError:
             try:
                 self.db.rollback()
